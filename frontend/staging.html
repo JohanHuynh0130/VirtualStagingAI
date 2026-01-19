@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Staging | Internal Tools</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-white text-gray-900 min-h-screen">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="/" class="font-bold text-lg tracking-tight font-heading text-[#4F46E5] uppercase">Bella Staging</a>
+            <div class="flex items-center gap-6">
+                <!-- <a href="/staging.html" class="nav-link nav-link-active text-gray-900 font-medium">Virtual Staging</a> -->
+                <!-- <a href="/editor.html" class="nav-link text-gray-500 hover:text-gray-900 transition-colors">Photo Editor</a> -->
+                <button id="settings-btn" class="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                        </path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-black/20 backdrop-blur-sm" id="settings-backdrop"></div>
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white border border-gray-100 shadow-2xl p-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold font-heading uppercase">Settings</h2>
+                <button id="close-settings" class="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label for="system-prompt"
+                        class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">System
+                        Prompt</label>
+                    <textarea id="system-prompt"
+                        class="w-full h-40 bg-gray-50 border border-gray-200 p-4 outline-none focus:border-[#4F46E5] text-sm"
+                        placeholder="You are an expert interior designer specializing in virtual staging..."></textarea>
+                </div>
+                <div>
+                    <label for="csv-upload"
+                        class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Furniture
+                        CSV</label>
+                    <input type="file" id="csv-upload" accept=".csv" class="hidden">
+                    <button id="csv-upload-btn"
+                        class="w-full border border-gray-200 py-3 text-sm font-bold uppercase tracking-wide hover:bg-gray-50 transition-colors">Upload
+                        Furniture CSV</button>
+                    <p id="csv-status" class="text-xs text-gray-400 mt-2">No CSV loaded</p>
+                </div>
+                <button id="save-settings"
+                    class="w-full bg-black text-white py-3 font-bold uppercase tracking-wide hover:bg-gray-900 transition-colors">Save
+                    Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16 px-6">
+        <div class="max-w-7xl mx-auto">
+            <header class="mb-8">
+                <h1
+                    class="text-3xl font-heading font-bold tracking-tight mb-2 text-gray-900 border-b-2 border-transparent inline-block">
+                    Virtual Staging</h1>
+                <p class="text-gray-500 font-light">Upload photos, select furniture and room type for each, then stage
+                    them all.
+                </p>
+            </header>
+
+            <!-- Step 1: Upload -->
+            <section class="mb-8">
+                <div class="flex items-center gap-3 mb-4">
+                    <span
+                        class="w-8 h-8 bg-black text-white flex items-center justify-center font-bold text-sm rounded-none">1</span>
+                    <h2 class="text-lg font-bold font-heading uppercase tracking-wide">Upload Images</h2>
+                </div>
+                <div id="drop-zone"
+                    class="border-2 border-dashed border-gray-200 bg-gray-50/50 p-12 text-center cursor-pointer hover:border-[#4F46E5] hover:bg-indigo-50/20 transition-all group">
+                    <input type="file" id="image-upload" accept="image/*" multiple class="hidden">
+                    <div class="text-4xl mb-4 opacity-50 group-hover:opacity-100 transition-opacity">📷</div>
+                    <p class="font-bold text-gray-900">Drop images here or click to browse</p>
+                    <p class="text-xs text-gray-400 mt-1 uppercase tracking-wider">Select multiple images for bulk
+                        processing</p>
+                </div>
+            </section>
+
+            <!-- Step 2: Configure Each Image -->
+            <section id="config-section" class="mb-8 hidden">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <span
+                            class="w-8 h-8 bg-black text-white flex items-center justify-center font-bold text-sm rounded-none">2</span>
+                        <h2 class="text-lg font-bold font-heading uppercase tracking-wide">Configure Each Image</h2>
+                    </div>
+                    <span id="image-count" class="text-sm text-gray-400 font-medium">0 images</span>
+                </div>
+                <div id="image-queue" class="space-y-4">
+                    <!-- Image config cards will be added here -->
+                </div>
+            </section>
+
+            <!-- Step 3: Stage -->
+            <section id="stage-section" class="mb-8 hidden">
+                <div class="flex items-center gap-3 mb-4">
+                    <span
+                        class="w-8 h-8 bg-black text-white flex items-center justify-center font-bold text-sm rounded-none">3</span>
+                    <h2 class="text-lg font-bold font-heading uppercase tracking-wide">Process</h2>
+                </div>
+                <button id="stage-btn"
+                    class="bg-[#4F46E5] hover:bg-[#4338ca] text-white px-8 py-4 font-bold uppercase tracking-widest text-xs transition-shadow shadow-lg shadow-indigo-100 w-full md:w-auto">
+                    <span id="btn-text">Stage All Images</span>
+                    <svg id="btn-spinner" class="animate-spin h-5 w-5 hidden" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                </button>
+                <div id="progress-container" class="mt-4 hidden">
+                    <div class="flex justify-between text-xs text-gray-500 mb-2 font-bold uppercase tracking-wider">
+                        <span id="progress-status">Processing...</span>
+                        <span id="progress-text">0 / 0</span>
+                    </div>
+                    <div class="h-1 bg-gray-100 overflow-hidden w-full">
+                        <div id="progress-bar" class="h-full bg-[#4F46E5] transition-all duration-300"
+                            style="width: 0%">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results with Before/After Comparison -->
+            <section id="results-section" class="hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-3">
+                        <span
+                            class="w-8 h-8 bg-black text-white flex items-center justify-center font-bold text-sm rounded-none">✓</span>
+                        <h2 class="text-lg font-bold font-heading uppercase tracking-wide">Results</h2>
+                    </div>
+                    <button id="download-all-btn"
+                        class="bg-black text-white hover:bg-gray-800 px-6 py-3 text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Download All (ZIP)
+                    </button>
+                </div>
+                <div id="results-gallery" class="space-y-8">
+                    <!-- Result cards will be added here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script type="module" src="./js/staging.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Editor | Internal Tools</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-black text-white min-h-screen">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-neutral-900">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="/" class="font-bold text-lg tracking-tight">Internal Tools</a>
+            <div class="flex items-center gap-6">
+                <a href="/staging.html" class="nav-link">Virtual Staging</a>
+                <a href="/editor.html" class="nav-link nav-link-active">Photo Editor</a>
+                <button id="settings-btn" class="p-2 rounded-lg hover:bg-neutral-900 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                        </path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" id="settings-backdrop"></div>
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-neutral-950 border border-neutral-800 rounded-2xl p-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold">Settings</h2>
+                <button id="close-settings" class="p-2 hover:bg-neutral-900 rounded-lg transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label for="system-prompt" class="block text-sm font-medium text-neutral-400 mb-2">System
+                        Prompt</label>
+                    <textarea id="system-prompt" class="input-field w-full h-40"
+                        placeholder="You are an expert photo editor. Maintain quality and realism..."></textarea>
+                </div>
+                <p class="text-xs text-neutral-600">This prompt will be used for all editing generations.</p>
+                <button id="save-settings" class="btn-primary w-full">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-32 px-6">
+        <div class="max-w-4xl mx-auto">
+            <header class="mb-8">
+                <h1 class="text-3xl font-bold tracking-tight mb-2">Photo Editor</h1>
+                <p class="text-neutral-500">Upload an image and have a conversation with AI to iteratively edit it.</p>
+            </header>
+
+            <!-- Chat Container -->
+            <div class="glass-panel rounded-xl overflow-hidden">
+                <!-- Chat Messages -->
+                <div id="chat-container" class="h-[60vh] overflow-y-auto p-6 space-y-6">
+                    <!-- Empty State -->
+                    <div id="chat-empty" class="h-full flex flex-col items-center justify-center text-center">
+                        <div class="text-6xl mb-4 opacity-20">💬</div>
+                        <p class="text-neutral-500 mb-6">Upload an image to start editing</p>
+                        <label for="initial-upload" class="btn-primary cursor-pointer">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                            <span>Upload Image</span>
+                        </label>
+                        <input type="file" id="initial-upload" accept="image/*" class="hidden">
+                    </div>
+
+                    <!-- Messages will be appended here -->
+                </div>
+
+                <!-- Input Area -->
+                <div id="input-area" class="p-4 border-t border-neutral-800 bg-neutral-950 hidden">
+                    <div class="flex gap-3">
+                        <label for="add-image"
+                            class="p-3 rounded-lg bg-neutral-900 hover:bg-neutral-800 transition-colors cursor-pointer shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                            <input type="file" id="add-image" accept="image/*" class="hidden">
+                        </label>
+                        <input type="text" id="message-input" class="input-field flex-1"
+                            placeholder="Describe the edit you want...">
+                        <button id="send-btn" class="btn-primary shrink-0" disabled>
+                            <span id="send-text">Send</span>
+                            <svg id="send-spinner" class="animate-spin h-5 w-5 hidden"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between mt-3">
+                        <p id="status-msg" class="text-xs text-neutral-600"></p>
+                        <button id="new-session"
+                            class="text-xs text-neutral-600 hover:text-white transition-colors">Start New
+                            Session</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="./js/editor.js"></script>
+</body>
+
+</html>

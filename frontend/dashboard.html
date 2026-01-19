@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Bella Virtual Staging</title>
+    <link href="./style.css" rel="stylesheet">
+</head>
+
+<body class="bg-white text-gray-900 min-h-screen font-sans antialiased selection:bg-indigo-500/20">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 border-b border-gray-100 bg-white/80 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-[#4F46E5] text-white flex items-center justify-center rounded-none shadow-sm">
+                    <span class="font-heading font-bold text-lg">B</span>
+                </div>
+                <span class="font-heading font-bold text-xl tracking-tight">Bella Staging</span>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="text-sm font-medium text-gray-500 uppercase tracking-wide">Welcome back</div>
+                <div class="w-8 h-8 rounded-full bg-gray-100 border border-gray-200"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+            <div>
+                <h1 class="text-4xl font-heading font-bold mb-3 text-gray-900">Projects</h1>
+                <p class="text-gray-500 max-w-md">Manage your virtual staging sessions and delivery links.</p>
+            </div>
+            <div class="flex gap-4">
+                <button id="new-staging-btn"
+                    class="bg-[#121212] hover:bg-black text-white px-8 py-4 font-medium transition-all flex items-center gap-2 shadow-lg shadow-gray-200 uppercase tracking-wider text-xs rounded-none">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    New Project
+                </button>
+            </div>
+        </div>
+
+        <!-- Projects Grid -->
+        <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Loading Skeletons -->
+            <div class="h-80 bg-gray-50 animate-pulse border border-gray-100"></div>
+            <div class="h-80 bg-gray-50 animate-pulse border-gray-100"></div>
+        </div>
+
+    </main>
+
+    <!-- Create Project Modal -->
+    <div id="create-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6">
+        <div class="absolute inset-0 bg-white/90 backdrop-blur-md" id="modal-backdrop"></div>
+        <div class="relative bg-white border border-gray-100 p-10 max-w-md w-full shadow-2xl shadow-gray-200/50">
+            <h2 class="text-2xl font-heading font-bold mb-8 text-center uppercase tracking-wide" id="modal-title">New
+                Project</h2>
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-widest">Project
+                        Name</label>
+                    <input type="text" id="project-name"
+                        class="w-full bg-gray-50 border border-gray-200 px-4 py-4 outline-none focus:border-[#4F46E5] focus:ring-1 focus:ring-[#4F46E5] transition-all rounded-none placeholder:text-gray-300"
+                        placeholder="e.g., 123 Luxury Ave">
+                </div>
+                <button id="create-btn"
+                    class="w-full bg-[#4F46E5] hover:bg-[#4338ca] text-white font-bold py-4 transition-all uppercase tracking-wider text-xs shadow-lg shadow-indigo-100 rounded-none">
+                    Create Project
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Result Modal -->
+    <div id="upload-result-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6">
+        <div class="absolute inset-0 bg-white/90 backdrop-blur-md" id="upload-backdrop"></div>
+        <div class="relative bg-white border border-gray-100 p-10 max-w-md w-full shadow-2xl shadow-gray-200/50">
+            <h2 class="text-2xl font-heading font-bold mb-2 text-center uppercase tracking-wide">Upload Result</h2>
+            <p class="text-center text-gray-400 text-sm mb-8">Add a finished "After" photo manually.</p>
+
+            <div class="space-y-6">
+                <input type="hidden" id="upload-project-id">
+
+                <!-- Original Input -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest">1. Original (Empty)
+                        Photo</label>
+                    <div
+                        class="border-2 border-dashed border-gray-200 p-4 text-center cursor-pointer hover:border-[#4F46E5] hover:bg-indigo-50/50 transition-colors relative group">
+                        <input type="file" id="original-file" class="absolute inset-0 opacity-0 cursor-pointer"
+                            accept="image/*">
+                        <div id="original-preview"
+                            class="text-gray-400 text-xs font-medium uppercase tracking-wide pointer-events-none group-hover:text-[#4F46E5]">
+                            Click to Select Original
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Input -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest">2. Staged (After)
+                        Photo</label>
+                    <div
+                        class="border-2 border-dashed border-gray-200 p-4 text-center cursor-pointer hover:border-[#4F46E5] hover:bg-indigo-50/50 transition-colors relative group">
+                        <input type="file" id="result-file" class="absolute inset-0 opacity-0 cursor-pointer"
+                            accept="image/*">
+                        <div id="result-preview"
+                            class="text-gray-400 text-xs font-medium uppercase tracking-wide pointer-events-none group-hover:text-[#4F46E5]">
+                            Click to Select Staged
+                        </div>
+                    </div>
+                </div>
+
+                <button id="confirm-upload-btn"
+                    class="w-full bg-[#121212] hover:bg-black text-white font-bold py-4 transition-all uppercase tracking-wider text-xs shadow-lg rounded-none">
+                    Upload & Save Pair
+                </button>
+                <button id="cancel-upload-btn"
+                    class="w-full bg-white border border-gray-200 text-gray-500 font-bold py-4 transition-all uppercase tracking-wider text-xs hover:bg-gray-50 rounded-none">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        const grid = document.getElementById('projects-grid');
+        const modal = document.getElementById('create-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const nameInput = document.getElementById('project-name');
+        const createBtn = document.getElementById('create-btn');
+        const uploadModal = document.getElementById('upload-result-modal');
+        const uploadProjectId = document.getElementById('upload-project-id');
+        const originalFileInput = document.getElementById('original-file');
+        const resultFileInput = document.getElementById('result-file');
+        const confirmUploadBtn = document.getElementById('confirm-upload-btn');
+        let currentType = 'staging';
+
+        async function loadProjects() {
+            try {
+                const res = await fetch('/api/projects');
+                const projects = await res.json();
+
+                if (projects.length === 0) {
+                    grid.innerHTML = `
+                        <div class="col-span-full text-center py-32 text-gray-400 border border-dashed border-gray-200 bg-gray-50/50">
+                            <p class="font-heading uppercase tracking-widest text-sm">No projects yet</p>
+                            <p class="text-xs mt-2">Create your first virtual staging project</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                grid.innerHTML = projects.map(p => `
+                    <div class="bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:translate-y-[-4px] transition-all duration-300 group">
+                        <div class="h-64 bg-gray-100 overflow-hidden relative border-b border-gray-50">
+                             ${p.thumbnail
+                        ? `<img src="${p.thumbnail}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">`
+                        : `<div class="w-full h-full flex flex-col items-center justify-center text-gray-300 bg-gray-50">
+                                    <span class="text-xs uppercase tracking-widest font-medium">No Image</span>
+                                   </div>`
+                    }
+                             <div class="absolute top-4 right-4 px-3 py-1 bg-white/90 backdrop-blur shadow-sm text-[10px] font-bold uppercase tracking-wider text-gray-900 border border-gray-100">
+                                ${p.type}
+                             </div>
+                        </div>
+                        
+                        <div class="p-8">
+                            <div class="flex items-start justify-between mb-6">
+                                <div>
+                                    <h3 class="font-heading font-bold text-xl text-gray-900 mb-1 leading-tight">${p.name}</h3>
+                                    <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">${new Date(p.created_at).toLocaleDateString()}</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="openRenameModal(${p.id}, '${p.name.replace(/'/g, "\\'")}')" class="text-gray-300 hover:text-[#4F46E5] transition-colors">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                    </button>
+                                    <button onclick="deleteProject(${p.id}, event)" class="text-gray-300 hover:text-red-500 transition-colors">
+                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <button onclick="window.location.href='/${p.type}.html?projectId=${p.id}'" class="py-3 border border-gray-200 text-gray-600 hover:border-gray-900 hover:text-gray-900 transition-colors uppercase tracking-wider text-[11px] font-bold">
+                                        Editor
+                                    </button>
+                                    <button onclick="window.location.href='/delivery/${p.id}'" class="py-3 bg-[#4F46E5] text-white hover:bg-[#4338ca] transition-colors uppercase tracking-wider text-[11px] font-bold shadow-md shadow-indigo-100">
+                                        Delivery
+                                    </button>
+                                </div>
+                                <button onclick="openUploadModal(${p.id})" class="w-full py-3 bg-gray-900 text-white hover:bg-black transition-colors uppercase tracking-wider text-[11px] font-bold">
+                                    Upload Manual Result
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        window.deleteProject = async (id, e) => {
+            if (e) e.stopPropagation();
+            if (!confirm('Are you sure you want to delete this project?')) return;
+            await fetch('/api/projects/' + id, { method: 'DELETE' });
+            loadProjects();
+        };
+
+        window.openUploadModal = (id) => {
+            uploadProjectId.value = id;
+            if (originalFileInput) originalFileInput.value = '';
+            if (resultFileInput) resultFileInput.value = '';
+            document.getElementById('original-preview').textContent = "Click to Select Original";
+            document.getElementById('result-preview').textContent = "Click to Select Staged";
+            uploadModal.classList.remove('hidden');
+        };
+
+        document.getElementById('cancel-upload-btn').addEventListener('click', () => {
+            uploadModal.classList.add('hidden');
+        });
+
+        if (originalFileInput) {
+            originalFileInput.addEventListener('change', (e) => {
+                if (e.target.files[0]) {
+                    document.getElementById('original-preview').textContent = e.target.files[0].name;
+                }
+            });
+        }
+
+        if (resultFileInput) {
+            resultFileInput.addEventListener('change', (e) => {
+                if (e.target.files[0]) {
+                    document.getElementById('result-preview').textContent = e.target.files[0].name;
+                }
+            });
+        }
+
+        confirmUploadBtn.addEventListener('click', async () => {
+            const originalFile = originalFileInput.files[0];
+            const resultFile = resultFileInput.files[0];
+            const projectId = uploadProjectId.value;
+
+            if (!projectId) return;
+            if (!originalFile || !resultFile) {
+                alert("Please select BOTH an Original and a Staged image.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('original', originalFile);
+            formData.append('result', resultFile);
+            formData.append('projectId', projectId);
+
+            confirmUploadBtn.textContent = "Uploading...";
+            confirmUploadBtn.disabled = true;
+
+            try {
+                const res = await fetch('/api/upload-result', {
+                    method: 'POST',
+                    body: formData
+                });
+                if (res.ok) {
+                    alert('Uploaded successfully!');
+                    uploadModal.classList.add('hidden');
+                    loadProjects();
+                } else {
+                    alert('Upload failed');
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Error uploading');
+            } finally {
+                confirmUploadBtn.textContent = "Upload & Save Pair";
+                confirmUploadBtn.disabled = false;
+            }
+        });
+
+        let editProjectId = null;
+
+        function openModal(type, isEdit = false, currentName = '', id = null) {
+            currentType = type;
+            editProjectId = id;
+            modalTitle.textContent = isEdit ? 'Rename Project' : 'New Project';
+            createBtn.textContent = isEdit ? 'Save Changes' : 'Create Project';
+            nameInput.value = currentName;
+            modal.classList.remove('hidden');
+            nameInput.focus();
+        }
+
+        window.openRenameModal = (id, name) => {
+            openModal('staging', true, name, id);
+        };
+
+        document.getElementById('new-staging-btn').addEventListener('click', () => openModal('staging'));
+        document.getElementById('modal-backdrop').addEventListener('click', () => modal.classList.add('hidden'));
+        document.getElementById('upload-backdrop').addEventListener('click', () => uploadModal.classList.add('hidden'));
+
+        createBtn.addEventListener('click', async () => {
+            const name = nameInput.value.trim();
+            if (!name) return;
+
+            try {
+                if (editProjectId) {
+                    // Update
+                    const res = await fetch(`/api/projects/${editProjectId}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name })
+                    });
+                    if (res.ok) {
+                        modal.classList.add('hidden');
+                        loadProjects();
+                    }
+                } else {
+                    // Create
+                    const res = await fetch('/api/projects', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, type: currentType })
+                    });
+                    const project = await res.json();
+                    window.location.href = '/' + currentType + '.html?projectId=' + project.id;
+                }
+            } catch (err) {
+                alert('Action failed');
+            }
+        });
+
+        loadProjects();
+    </script>
+</body>
+
+</html>
